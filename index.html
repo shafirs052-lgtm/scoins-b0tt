@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCoinS PRO - Коллекционные монеты</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-top">
+                <h1>🪙 SCoinS PRO</h1>
+                <div class="balance-card">
+                    <span id="balance">100</span>
+                    <span>⭐</span>
+                </div>
+            </div>
+            
+            <div class="menu">
+                <button class="menu-btn active" onclick="showSection('shop')">🏪 Магазин</button>
+                <button class="menu-btn" onclick="showSection('collection')">🎒 Коллекция</button>
+                <button class="menu-btn" onclick="showSection('marketplace')">🔄 Рынок</button>
+                <button class="menu-btn" onclick="showSection('topup')">💳 Пополнить</button>
+                <button class="menu-btn" onclick="showSection('stats')">📊 Статистика</button>
+            </div>
+        </header>
+        
+        <!-- Магазин -->
+        <section id="shop" class="section active">
+            <h2>🏪 Магазин монет</h2>
+            <div class="search-box">
+                <input type="text" id="searchCoins" placeholder="🔍 Поиск монет..." oninput="game.searchCoins(this.value)">
+            </div>
+            <div class="coins-grid" id="coinsGrid"></div>
+        </section>
+        
+        <!-- Коллекция -->
+        <section id="collection" class="section">
+            <h2>🎒 Ваша коллекция</h2>
+            <div class="collection-stats">
+                <div class="stat-card">
+                    <span>Всего монет:</span>
+                    <strong id="totalCoins">0</strong>
+                </div>
+                <div class="stat-card">
+                    <span>Общая стоимость:</span>
+                    <strong id="totalValue">0 ⭐</strong>
+                </div>
+            </div>
+            <div id="collectionGrid"></div>
+        </section>
+        
+        <!-- Рынок -->
+        <section id="marketplace" class="section">
+            <h2>🔄 Торговая площадка</h2>
+            
+            <div class="marketplace-controls">
+                <div class="sell-form">
+                    <h3>💰 Продать свои монеты</h3>
+                    <p>Выберите монету из коллекции и установите свою цену</p>
+                    <button class="btn" onclick="showSection('collection')">
+                        📦 Перейти к коллекции
+                    </button>
+                </div>
+                
+                <div class="filter-controls">
+                    <select id="rarityFilter" onchange="game.filterMarketplace()">
+                        <option value="all">Все редкости</option>
+                        <option value="common">Обычные</option>
+                        <option value="rare">Редкие</option>
+                        <option value="epic">Эпические</option>
+                        <option value="legendary">Легендарные</option>
+                    </select>
+                    <select id="sortFilter" onchange="game.filterMarketplace()">
+                        <option value="newest">Сначала новые</option>
+                        <option value="cheapest">Сначала дешевые</option>
+                        <option value="expensive">Сначала дорогие</option>
+                    </select>
+                </div>
+            </div>
+            
+            <h3>🏪 Активные предложения</h3>
+            <div id="marketplaceContent"></div>
+        </section>
+        
+        <!-- Пополнение -->
+        <section id="topup" class="section">
+            <h2>💳 Пополнение баланса</h2>
+            
+            <div class="payment-options">
+                <div class="payment-option selected" onclick="paymentSystem.selectPayment('stars')">
+                    <div class="icon">⭐</div>
+                    <div class="payment-title">Telegram Stars</div>
+                    <div class="payment-desc">
+                        1 звезда = 1 ⭐ в игре<br>
+                        ⚡ Мгновенное пополнение
+                    </div>
+                </div>
+                
+                <div class="payment-option" onclick="paymentSystem.selectPayment('ton')">
+                    <div class="icon">⚡</div>
+                    <div class="payment-title">TON</div>
+                    <div class="payment-desc">
+                        1 TON = 150 ⭐<br>
+                        🔄 Автопроверка
+                    </div>
+                </div>
+                
+                <div class="payment-option" onclick="paymentSystem.selectPayment('crypto')">
+                    <div class="icon">₿</div>
+                    <div class="payment-title">Криптовалюта</div>
+                    <div class="payment-desc">
+                        USDT, BTC, ETH<br>
+                        🔐 Безопасно
+                    </div>
+                </div>
+            </div>
+            
+            <h3>Выберите сумму:</h3>
+            <div class="amount-buttons">
+                <button class="amount-btn" onclick="paymentSystem.selectAmount(15)">15 ⭐</button>
+                <button class="amount-btn" onclick="paymentSystem.selectAmount(25)">25 ⭐</button>
+                <button class="amount-btn" onclick="paymentSystem.selectAmount(50)">50 ⭐</button>
+                <button class="amount-btn selected" onclick="paymentSystem.selectAmount(100)">100 ⭐</button>
+                <button class="amount-btn" onclick="paymentSystem.selectAmount(500)">500 ⭐</button>
+                <button class="amount-btn" onclick="paymentSystem.selectAmount(1000)">1,000 ⭐</button>
+            </div>
+            
+            <div class="custom-amount">
+                <label>Или введите свою сумму:</label>
+                <input type="number" id="customAmount" placeholder="Введите сумму" min="15" max="100000">
+            </div>
+            
+            <button class="btn payment-btn" onclick="paymentSystem.startPayment()">
+                💳 Перейти к оплате
+            </button>
+            
+            <div class="payment-info">
+                <h4>💡 Как пополнить баланс?</h4>
+                <ol>
+                    <li>Выберите способ оплаты и сумму</li>
+                    <li>Следуйте инструкциям в платежном окне</li>
+                    <li>Баланс пополнится автоматически после подтверждения платежа</li>
+                </ol>
+            </div>
+        </section>
+        
+        <!-- Статистика -->
+        <section id="stats" class="section">
+            <h2>📊 Статистика</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card large">
+                    <h3>📈 Общая статистика</h3>
+                    <div class="stat-item">
+                        <span>Баланс:</span>
+                        <strong id="statBalance">0 ⭐</strong>
+                    </div>
+                    <div class="stat-item">
+                        <span>Всего монет:</span>
+                        <strong id="statTotalCoins">0</strong>
+                    </div>
+                    <div class="stat-item">
+                        <span>Уникальных монет:</span>
+                        <strong id="statUniqueCoins">0</strong>
+                    </div>
+                    <div class="stat-item">
+                        <span>Общая стоимость:</span>
+                        <strong id="statTotalValue">0 ⭐</strong>
+                    </div>
+                </div>
+                
+                <div class="stat-card large">
+                    <h3>🎯 Достижения</h3>
+                    <div id="achievementsList"></div>
+                </div>
+                
+                <div class="stat-card large">
+                    <h3>💰 Рыночная активность</h3>
+                    <div class="stat-item">
+                        <span>Продано монет:</span>
+                        <strong id="statSold">0</strong>
+                    </div>
+                    <div class="stat-item">
+                        <span>Куплено с рынка:</span>
+                        <strong id="statBought">0</strong>
+                    </div>
+                    <div class="stat-item">
+                        <span>Всего транзакций:</span>
+                        <strong id="statTransactions">0</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Уведомления -->
+    <div class="notification" id="notification"></div>
+    
+    <!-- Модальные окна -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-content">
+            <h3 id="paymentTitle">💳 Оплата</h3>
+            <div id="paymentContent"></div>
+        </div>
+    </div>
+    
+    <div class="modal" id="sellModal">
+        <div class="modal-content">
+            <h3>💰 Продать монету</h3>
+            <div id="sellCoinInfo"></div>
+            <div class="form-group">
+                <label>Цена продажи (в звездах):</label>
+                <input type="number" id="sellPrice" placeholder="Укажите цену" min="1">
+            </div>
+            <div class="modal-actions">
+                <button class="btn" onclick="marketplace.confirmSell()">✅ Выставить на продажу</button>
+                <button class="btn btn-secondary" onclick="closeModal('sellModal')">❌ Отмена</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="coinInfoModal">
+        <div class="modal-content">
+            <h3 id="coinInfoTitle">Информация о монете</h3>
+            <div id="coinInfoContent"></div>
+        </div>
+    </div>
+
+    <!-- Подключение скриптов -->
+    <script src="config.js"></script>
+    <script src="game-engine.js"></script>
+    <script src="marketplace.js"></script>
+    <script src="payment-system.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
